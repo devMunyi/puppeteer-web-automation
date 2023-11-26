@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require('dotenv').config();
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const path_1 = __importDefault(require("path"));
 (() => __awaiter(void 0, void 0, void 0, function* () {
@@ -22,10 +23,16 @@ const path_1 = __importDefault(require("path"));
     const page = yield browser.newPage();
     const url = 'http://localhost/super-lender';
     yield page.goto(url);
-    yield page.waitForSelector('#inp_email');
-    yield page.type('#inp_email', 'samunyi90@gmail.com', { delay: 100 });
-    yield page.waitForSelector('#inp_password');
-    yield page.type('#inp_password', 'Sabala90@', { delay: 100 });
+    const env = process.env;
+    if (env.MY_USER !== undefined && env.MY_PASS !== undefined) {
+        yield page.waitForSelector('#inp_email');
+        yield page.type('#inp_email', env.MY_USER, { delay: 100 });
+        yield page.waitForSelector('#inp_password');
+        yield page.type('#inp_password', env.MY_PASS, { delay: 100 });
+    }
+    else {
+        console.error('Username or password is not defined in the environment variables.');
+    }
     yield page.waitForSelector('button[type="submit"]');
     yield page.click('button[type="submit"]');
     yield page.waitForNavigation({ waitUntil: 'networkidle0' });

@@ -1,3 +1,4 @@
+require('dotenv').config()
 import puppeteer from 'puppeteer';
 import path from 'path';
 
@@ -12,11 +13,25 @@ import path from 'path';
   const url = 'http://localhost/super-lender';
   await page.goto(url);
 
+  interface EnvironmentVariables {
+    MY_USER?: string;
+    MY_PASS?: string;
+    // Add other environment variables as needed
+  }
+  
+  // Use the defined interface for process.env
+  const env: EnvironmentVariables = process.env as EnvironmentVariables;
+
+  // Check if USERNAME and PASSWORD are defined before using them
+if (env.MY_USER !== undefined && env.MY_PASS !== undefined) {
   await page.waitForSelector('#inp_email');
-  await page.type('#inp_email', '<username/email>', { delay: 100 });
+  await page.type('#inp_email', env.MY_USER, { delay: 100 });
 
   await page.waitForSelector('#inp_password');
-  await page.type('#inp_password', '<password>', { delay: 100 });
+  await page.type('#inp_password', env.MY_PASS, { delay: 100 });
+} else {
+  console.error('Username or password is not defined in the environment variables.');
+}
 
   await page.waitForSelector('button[type="submit"]');
   await page.click('button[type="submit"]');
